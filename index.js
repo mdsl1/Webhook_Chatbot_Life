@@ -10,6 +10,9 @@ app.get('/', (req, res) => {
   res.send("Servidor está funcionando!");
 });
 
+// Middleware para aceitar requisições em JSON
+app.use(express.json());
+
 // Rota do webhook
 app.post('/webhook', (req, res) => {
   const intentName = req.body.queryResult.intent.displayName;
