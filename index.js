@@ -53,8 +53,8 @@ app.post('/webhook', (req, res) => {
   }
 
   if (intentName === 'Saudacao') {
-    const sql = 'INSERT INTO teste VALUES (?, ?)';
-    const valores = [1, 'Teste'];
+    const sql = 'INSERT INTO teste (nome) VALUES (?)';
+    const valores = ['Teste'];
 
     // Exemplo: Insere um valor no banco
     connection.query(sql, valores, (err, results) => {
