@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const mysql = require('mysql2');
+const mysql = require('mysql');
 
 // Middleware para interpretar JSON
 app.use(bodyParser.json());
@@ -17,11 +17,11 @@ app.use(express.json());
 // Configuração da conexão com o MySQL
 require('dotenv').config();
 const connection = mysql.createConnection({
-  host: '127.0.0.1',       // ou o endereço do servidor MySQL
-  port: '3306', 
-  user: 'root',            // seu usuário MySQL
+  host: process.env.DB_HOST,       // ou o endereço do servidor MySQL
+  port: process.env.DB_PORT, 
+  user: process.env.DB_USER,            // seu usuário MySQL
   password: process.env.DB_PASSWORD,   // sua senha do MySQL
-  database: 'projectlife' // o banco de dados criado
+  database: process.env.DB_NAME // o banco de dados criado
 });
 
 // Testa a conexão ao iniciar o servidor
@@ -48,8 +48,8 @@ app.post('/webhook', (req, res) => {
   }
 
   if (intentName === 'Saudacao') {
-    const sql = 'INSERT INTO colaboradores VALUES (?, ?, ?)';
-    const valores = [2, 'Teste', 0];
+    const sql = 'INSERT INTO teste VALUES (?, ?)';
+    const valores = [1, 'Teste'];
 
     // Exemplo: Insere um valor no banco
     connection.query(sql, valores, (err, results) => {
