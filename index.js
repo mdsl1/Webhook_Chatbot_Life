@@ -17,16 +17,11 @@ app.use(express.json());
 // Configuração da conexão com o MySQL
 require('dotenv').config();
 const connection = mysql.createConnection({
-  /*host: process.env.DB_HOST,       // ou o endereço do servidor MySQL
+  host: process.env.DB_HOST,       // ou o endereço do servidor MySQL
   port: process.env.DB_PORT, 
   user: process.env.DB_USER,            // seu usuário MySQL
   password: process.env.DB_PASSWORD,   // sua senha do MySQL
-  database: process.env.DB_NAME // o banco de dados criado*/
-  host: 'projectlifetest.cl6ea2m6uch3.us-east-1.rds.amazonaws.com',       // ou o endereço do servidor MySQL
-  port: 3306, 
-  user: 'root',            // seu usuário MySQL
-  password: '100%ViruZ',   // sua senha do MySQL
-  database:'testlifeproject'
+  database: process.env.DB_NAME // o banco de dados criado
 });
 
 // Testa a conexão ao iniciar o servidor
