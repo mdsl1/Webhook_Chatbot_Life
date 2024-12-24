@@ -1,30 +1,41 @@
+// Framework web para facilitar na criação de servidores
 const express = require('express');
-const bodyParser = require('body-parser');
+// Instância do Express que representa a aplicação web/ API que está sendo criada
 const app = express();
+// Biblioteca que permite a comunicação entre o Node.js e o MySQL
 const mysql = require('mysql');
 
-// Middleware para interpretar JSON
-app.use(bodyParser.json());
 
-// Rota principal (opcional)
+// Middleware para aceitar requisições em JSON
+// Middleware é uma função que tem acesso às requisições e respostas do servidor. Eles podem tanto executar códigos quanto modificar requisições e respostas
+app.use(express.json());
+
+
+/*Configurações para testar localmente*/
+// Rota principal (opcional). Configuração usada para testar localmente
 app.get('/', (req, res) => {
   res.send("Servidor está funcionando!");
 });
-
-// Middleware para aceitar requisições em JSON
-app.use(express.json());
-
-// Configuração da conexão com o MySQL
-require('dotenv').config();
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,       // ou o endereço do servidor MySQL
-  port: process.env.DB_PORT, 
-  user: process.env.DB_USER,            // seu usuário MySQL
-  password: process.env.DB_PASSWORD,   // sua senha do MySQL
-  database: process.env.DB_NAME // o banco de dados criado
+// Define a Porta do servidor para testar localmente (o Render define automaticamente)
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
 });
 
-// Testa a conexão ao iniciar o servidor
+
+/*Configurações do MySQL*/
+// Carrega as variáveis com informações sensíveis para o código, informações essa que estão armazenadas no arquivo .env
+require('dotenv').config();
+// Cria uma conexão com o banco de dados
+const connection = mysql.createConnection({
+  // Configurações da conexão com o MySQL
+  host: process.env.DB_HOST, // Endereço do servidor MySQL
+  port: process.env.DB_PORT, // Porta do MySQL
+  user: process.env.DB_USER, // Nome do usuário
+  password: process.env.DB_PASSWORD, // Senha do banco de dados
+  database: process.env.DB_NAME // Nome do banco de dados
+});
+// Testa a conexão com o banco de dados ao iniciar o servidor
 connection.connect((err) => {
   if (err) {
     console.error('Erro ao conectar ao MySQL:', err);
@@ -33,12 +44,17 @@ connection.connect((err) => {
   }
 });
 
-// Rota do webhook
-app.post('/webhook', (req, res) => {
-  const intentName = req.body.queryResult.intent.displayName;
 
+/*Configurações do webhook*/
+// Define uma rota usada para receber os dados do Dialogflow
+app.post('/webhook', (req, res) => {
+  // Acessa o nome da intent enviada pelo Dialogflow no corpo da requisição
+  const intentName = req.body.queryResult.intent.displayName;
+  //Verifica se a intent é a que será utilizada
   if (intentName === 'Saudacao') {
+    // Caso seja, envia uma resposta json ao dialogflow
     res.json({
+      // Texto que será mostrado ao usuário
       fulfillmentText: "Olá! Como posso ajudar você hoje?"
     });
   } else {
@@ -47,27 +63,26 @@ app.post('/webhook', (req, res) => {
     });
   }
 
+  // Verifica se a intent é a que será utilizada
   if (intentName === 'Saudacao') {
+    // Cria um comando sql para inserir os valores na coluna especificada e com o valor que será especificado abaixo
     const sql = 'INSERT INTO teste (nome) VALUES (?)';
+    // Define o valor que será adicionado ao banco de dados
     const valores = ['Teste'];
 
-    // Exemplo: Insere um valor no banco
+    // Executa o comando SQL
     connection.query(sql, valores, (err, results) => {
+      // Caso dê erro, ele retorna uma mensagem de erro
       if (err) {
         console.error('Erro ao consultar o banco:', err);
         res.json({ fulfillmentText: 'Desculpe, ocorreu um erro ao processar sua solicitação.' });
         return;
       }
-      // Retorna a mensagem encontrada no banco
+      // Caso contrário, retorna uma mensagem de sucesso
       res.json({ fulfillmentText: 'Valor inserido com sucesso'});
     });
+    // Caso ele não tenha encontrado a intent especificada, ele retorna uma mensagem de erro
   } else {
     res.json({ fulfillmentText: 'Intent não reconhecida.' });
   }
-});
-
-// Porta do servidor (Render define automaticamente)
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
 });
