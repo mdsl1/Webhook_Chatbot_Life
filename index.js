@@ -50,18 +50,6 @@ connection.connect((err) => {
 app.post('/webhook', (req, res) => {
   // Acessa o nome da intent enviada pelo Dialogflow no corpo da requisição
   const intentName = req.body.queryResult.intent.displayName;
-  //Verifica se a intent é a que será utilizada
-  if (intentName === 'Saudacao') {
-    // Caso seja, envia uma resposta json ao dialogflow
-    res.json({
-      // Texto que será mostrado ao usuário
-      fulfillmentText: "Olá! Como posso ajudar você hoje?"
-    });
-  } else {
-    res.json({
-      fulfillmentText: "Desculpe, não entendi a solicitação."
-    });
-  }
 
   // Verifica se a intent é a que será utilizada
   if (intentName === 'Saudacao') {
@@ -75,10 +63,11 @@ app.post('/webhook', (req, res) => {
       // Caso dê erro, ele retorna uma mensagem de erro
       if (err) {
         console.error('Erro ao consultar o banco:', err);
+        // Texto que será mostrado ao usuário
         res.json({ fulfillmentText: 'Desculpe, ocorreu um erro ao processar sua solicitação.' });
         return;
       }
-      // Caso contrário, retorna uma mensagem de sucesso
+      // Senão, retorna uma mensagem de sucesso
       res.json({ fulfillmentText: 'Valor inserido com sucesso'});
     });
     // Caso ele não tenha encontrado a intent especificada, ele retorna uma mensagem de erro
