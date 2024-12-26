@@ -69,7 +69,7 @@ app.post('/webhook', (req, res) => {
         return;
       }
       // Senão, retorna uma mensagem de sucesso
-      res.json({ fulfillmentText: 'Valor inserido com sucesso ${nome}!'});
+      res.json({ fulfillmentText: 'Valor inserido com sucesso $nome!'});
     });
     // Caso ele não tenha encontrado a intent especificada, ele retorna uma mensagem de erro
   } else {
