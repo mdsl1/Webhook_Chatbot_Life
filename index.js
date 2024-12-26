@@ -44,6 +44,13 @@ connection.connect((err) => {
   }
 });
 
+// Função responsável por ajustar os valores de texto que vão entrar no banco de dados
+function capitalizeWords(string) {
+  return string
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
 
 /*Configurações do webhook*/
 // Define uma rota usada para receber os dados do Dialogflow
@@ -58,7 +65,7 @@ app.post('/webhook', (req, res) => {
     // Cria um comando SQL para inserir os valores na coluna especificada
     const sqlInsert = 'INSERT INTO teste (nome) VALUES (?)';
     // Obtém o valor do parâmetro 'nome' enviado pelo Dialogflow
-    const userNome = req.body.queryResult.parameters.nome;
+    const userNome = capitalizeWords(req.body.queryResult.parameters.nome);
 
     // Verifica no banco de dados se o nome já existe
     connection.query(sqlCheck, [userNome], (err, results) => {
