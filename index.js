@@ -53,49 +53,51 @@ app.post('/webhook', (req, res) => {
 
   // Verifica se a intent é a que será utilizada
   if (intentName === 'Saudacao') {
-
-    // Cria um comando sql para verificar se o valor já existe no banco de dados
+    // Cria um comando SQL para verificar se o valor já existe no banco de dados
     const sqlCheck = 'SELECT COUNT(*) AS total FROM usuarios WHERE nome = ?';
-    // Cria um comando sql para inserir os valores na coluna especificada e com o valor que será especificado abaixo
-    const sqlInput = 'INSERT INTO teste (nome) VALUES (?)';
-    // Obtém o valor do parametro (variavel) criada no dialogflow
+    // Cria um comando SQL para inserir os valores na coluna especificada
+    const sqlInsert = 'INSERT INTO usuarios (nome) VALUES (?)';
+    // Obtém o valor do parâmetro 'nome' enviado pelo Dialogflow
     const userNome = req.body.queryResult.parameters.nome;
-    // Define o valor que será adicionado ao banco de dados
-    const inputValues = [userNome];
-    
+
+    // Verifica no banco de dados se o nome já existe
     connection.query(sqlCheck, [userNome], (err, results) => {
       if (err) {
         console.error('Erro ao consultar o banco:', err);
         return res.json({
-          fulfillmentText: 'Desculpe, ocorreu um erro ao verificar o nome no banco de dados.'});
+          fulfillmentText: 'Desculpe, ocorreu um erro ao verificar o nome no banco de dados.',
+        });
       }
 
       // Verifica o total de registros encontrados
-      const checkValue = results[0].total;
+      const total = results[0].total;
 
-      if (checkValue > 0) {
+      if (total > 0) {
         // Se o nome já existe, retorna uma mensagem informando o usuário
         return res.json({
-          fulfillmentText: `O nome "${userNome}" já está registrado no banco de dados.`
+          fulfillmentText: `O nome "${userNome}" já está registrado no banco de dados.`,
         });
       } else {
-
-        // Executa o comando SQL
-        connection.query(sqlInput, inputValues, (err, results) => {
-          // Caso dê erro, ele retorna uma mensagem de erro
+        // Se o nome não existe, insere no banco de dados
+        connection.query(sqlInsert, [userNome], (err, results) => {
           if (err) {
-            console.error('Erro ao consultar o banco:', err);
-            // Texto que será mostrado ao usuário
-            res.json({ fulfillmentText: 'Desculpe, ocorreu um erro ao processar sua solicitação.' });
-            return;
+            console.error('Erro ao inserir no banco:', err);
+            return res.json({
+              fulfillmentText: 'Desculpe, ocorreu um erro ao registrar o nome no banco de dados.',
+            });
           }
-          // Senão, retorna uma mensagem de sucesso
-          res.json({ fulfillmentText: `Valor inserido com sucesso ${userNome}!`});
+
+          // Retorna uma mensagem de sucesso ao usuário
+          return res.json({
+            fulfillmentText: `Obrigado, ${userNome}! Seu nome foi registrado com sucesso.`,
+          });
         });
-    }
-  });
-    // Caso ele não tenha encontrado a intent especificada, ele retorna uma mensagem de erro
+      }
+    });
   } else {
-    res.json({ fulfillmentText: 'Intent não reconhecida.' });
+    // Caso a intent não seja reconhecida
+    return res.json({
+      fulfillmentText: 'Intent não reconhecida.',
+    });
   }
 });
