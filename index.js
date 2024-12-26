@@ -55,8 +55,9 @@ app.post('/webhook', (req, res) => {
   if (intentName === 'Saudacao') {
     // Cria um comando sql para inserir os valores na coluna especificada e com o valor que será especificado abaixo
     const sql = 'INSERT INTO teste (nome) VALUES (?)';
+    const userNome = req.body.queryResult.parameters.nome;
     // Define o valor que será adicionado ao banco de dados
-    const valores = ['Teste'];
+    const valores = [userNome];
 
     // Executa o comando SQL
     connection.query(sql, valores, (err, results) => {
@@ -68,7 +69,7 @@ app.post('/webhook', (req, res) => {
         return;
       }
       // Senão, retorna uma mensagem de sucesso
-      res.json({ fulfillmentText: 'Valor inserido com sucesso'});
+      res.json({ fulfillmentText: 'Valor inserido com sucesso ${nome}!'});
     });
     // Caso ele não tenha encontrado a intent especificada, ele retorna uma mensagem de erro
   } else {
