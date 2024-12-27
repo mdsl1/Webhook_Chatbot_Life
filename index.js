@@ -92,8 +92,6 @@ app.post('/webhook', (req, res) => {
         return res.json({fulfillmentText: 'Desculpe, ocorreu um erro ao verificar o nome no banco de dados.'});
       }
 
-      executeInsertValues(table, column, userNome);
-      
       // Verifica o total de registros encontrados
       const total = results[0].total;
 
@@ -108,7 +106,7 @@ app.post('/webhook', (req, res) => {
           if (err) {
             console.error('Erro ao inserir no banco:', err);
             return res.json({fulfillmentText: 'Desculpe, ocorreu um erro ao registrar o nome no banco de dados.'});
-          } else {
+          } else if (results) {
             // Retorna uma mensagem de sucesso ao usuário
             return res.json({fulfillmentText: `Obrigado, ${userNome}! Seu nome foi registrado com sucesso.`});  
           }          
