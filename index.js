@@ -100,8 +100,8 @@ app.post('/webhook', (req, res) => {
         return res.json({fulfillmentText: `O nome "${userNome}" já está registrado no banco de dados.`});
       } else {
         // Se o nome não existe, insere no banco de dados
-        table = 'teste';
-        column = 'nome';
+        /*table = 'teste';
+        column = 'nome';*/
         executeInsertValues(table, column, userNome);/*, (err, inserted) => {
           if (err) {
             console.error('Erro ao inserir no banco:', err);
