@@ -92,6 +92,8 @@ app.post('/webhook', (req, res) => {
         return res.json({fulfillmentText: 'Desculpe, ocorreu um erro ao verificar o nome no banco de dados.'});
       }
 
+      executeInsertValues(table, column, userNome);
+      
       // Verifica o total de registros encontrados
       const total = results[0].total;
 
