@@ -73,9 +73,9 @@ app.post('/webhook', (req, res) => {
   // Acessa o nome da intent enviada pelo Dialogflow no corpo da requisição
   const intentName = req.body.queryResult.intent.displayName;
   // Variável usada para definir o nome da tabela que será usada nas operações SQL
-  const table = 'teste';
+  let table = 'teste';
   // Variável usada para definir o nome da coluna que será usada nas operações SQL
-  const column = 'nome';
+  let column = 'nome';
   // Cria um comando SQL para verificar se o valor já existe no banco de dados
   const sqlCheck = `SELECT COUNT(*) AS total FROM ${table} WHERE ${column} = ?`;
 
@@ -83,7 +83,7 @@ app.post('/webhook', (req, res) => {
   if (intentName === 'Saudacao') {
 
     // Obtém o valor do parâmetro 'nome' enviado pelo Dialogflow
-    const userNome = capitalizeWords(req.body.queryResult.parameters.nome);
+    let userNome = capitalizeWords(req.body.queryResult.parameters.nome);
 
     // Verifica no banco de dados se o nome já existe
     connection.query(sqlCheck, [userNome], (err, results) => {
@@ -93,7 +93,7 @@ app.post('/webhook', (req, res) => {
       }
       
       // Verifica o total de registros encontrados
-      const total = results[0].total;
+      let total = results[0].total;
 
       if (total > 0) {
         // Se o nome já existe, retorna uma mensagem informando o usuário
